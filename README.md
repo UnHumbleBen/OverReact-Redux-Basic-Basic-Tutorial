@@ -513,8 +513,83 @@ Add React libraries and `index.dart`:
 </html>
 ```
 
-## Next Steps
 And we're done! We now have a working counter application!
+
+## Additional Topic: Using Redux DevTools
+Redux DevTools can be set up easily by adding only a few
+lines of code.
+> Additional information about `redux_dev_tools` and
+`DevToolStore` can be found [here](https://github.com/brianegan/redux_dev_tools#redux_dev_tools)
+
+1. Add `redux_dev_tools` as a dev dependency in your `pubspec.yaml`.
+
+```yaml
+dev_dependencies:
+  redux_dev_tools: ^0.4.0
+```
+
+2. Import `redux_dev_tools` into your store file.
+```dart
+import 'package:redux_dev_tools/redux_dev_tools.dart';
+```
+
+3. Change your `Store` to a `DevToolsStore` instance and add
+the constant `overReactReduxDevToolsMiddleware` to your
+middleware.
+
+```diff
+-Store store = Store<CounterState>(stateReducer,
+-    initialState: CounterState.defaultState());
++Store store = DevToolsStore<CounterState>(
++  stateReducer,
++  initialState: CounterState.defaultState(),
++  middleware: [overReactReduxDevToolsMiddleware],
++);
+```
+
+> **NOTE:** You should revert back to a normal `Store` without
+the `overReactReduxDevToolsMiddleware` prior to making your
+code public (via publishing a package or deploying to production)
+as it will be less performant and could be a security risk.
+
+4. Implement `toJson` for actions and states. See [here for more details](https://github.com/MichaelMarner/dart-redux-remote-devtools#encoding-actions-and-state)
+
+```diff
+ class Action {
+   final String type;
+   final dynamic value;
+ 
+   Action({this.type, this.value});
++
++  Map<String, dynamic> toJson() {
++    return {
++      'type': type,
++      'value': value,
++    };
++  }
+ }
+ ```
+
+ ```diff
+ class CounterState {
++  Map<String, dynamic> toJson() {
++    return {
++      'smallCount': smallCount,
++      'bigCount': bigCount,
++      'name': name,
++    };
++  }
+ }
+ ```
+
+
+5. Get the Redux Devtools extension:
+* Chrome: https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en
+* Firefox: https://addons.mozilla.org/en-US/firefox/addon/reduxdevtools/
+
+You can run your code and open the devtools in your browser!
+
+## Next Steps
 
 Check out a [full-featured example application](https://github.com/Workiva/over_react/pull/439) that showcases
 what Redux and OverReact can do!

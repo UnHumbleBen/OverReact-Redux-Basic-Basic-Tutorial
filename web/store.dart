@@ -1,10 +1,21 @@
+import 'package:over_react/over_react_redux.dart';
 import 'package:redux/redux.dart';
+
+// Imports for the DevTools
+import 'package:redux_dev_tools/redux_dev_tools.dart';
 
 class Action {
   final String type;
   final dynamic value;
 
   Action({this.type, this.value});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'value': value,
+    };
+  }
 }
 
 class SmallIncrementAction extends Action {
@@ -23,8 +34,11 @@ class BigDecrementAction extends Action {
   BigDecrementAction() : super(type: 'BIG_DECREMENT_ACTION', value: 100);
 }
 
-Store store = Store<CounterState>(stateReducer,
-    initialState: CounterState.defaultState());
+Store store = DevToolsStore<CounterState>(
+  stateReducer,
+  initialState: CounterState.defaultState(),
+  middleware: [overReactReduxDevToolsMiddleware],
+);
 
 class CounterState {
   final int smallCount;
@@ -45,6 +59,14 @@ class CounterState {
       : smallCount = smallCount ?? oldState.smallCount,
         bigCount = bigCount ?? oldState.bigCount,
         name = name ?? oldState.name;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'smallCount': smallCount,
+      'bigCount': bigCount,
+      'name': name,
+    };
+  }
 }
 
 int smallCountReducer(CounterState oldState, dynamic action) {
