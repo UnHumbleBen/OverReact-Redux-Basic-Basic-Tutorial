@@ -513,7 +513,14 @@ libraries and `index.dart`:
 </html>
 ```
 
-
 ## Next Steps
+And we're done! We now have a working counter application!
+
 Check out a [full-featured example application](https://github.com/Workiva/over_react/pull/439) that showcases
 what Redux and OverReact can do!
+
+## Disclaimer
+This tutorial is based **heavily** on the official [Redux documentation](https://redux.js.org/) as well as [OverReact
+simple example](https://github.com/Workiva/over_react/tree/master/web/over_react_redux/examples/simple).
+I copied and paste much of the information and do not claim any credit. This tutorial is for the viewer's (probably just me)
+convenience.
