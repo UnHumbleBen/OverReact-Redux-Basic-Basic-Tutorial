@@ -483,8 +483,8 @@ is shadowed by `over_react.dart`. Removed `ErrorBoundary`, which
 is I did not think is too important for a beginner tutorial.
 
 ## Finishing Touches
-Remove `main.dart` and the script tag from the html. Add React
-libraries and `index.dart`:
+Remove `main.dart` and the corresponding script tag from `index.html`.
+Add React libraries and `index.dart`:
 
 ```html
 <!DOCTYPE html>
