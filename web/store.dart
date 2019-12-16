@@ -1,8 +1,8 @@
-import 'package:over_react/over_react_redux.dart';
 import 'package:redux/redux.dart';
 
 // Imports for the DevTools
 import 'package:redux_dev_tools/redux_dev_tools.dart';
+import 'package:over_react/over_react_redux.dart';
 
 class Action {
   final String type;
@@ -34,6 +34,11 @@ class BigDecrementAction extends Action {
   BigDecrementAction() : super(type: 'BIG_DECREMENT_ACTION', value: 100);
 }
 
+// Store to use in production.
+// Store store = Store<CounterState>(stateReducer,
+//     initialState: CounterState.defaultState());
+
+// Store to use in development.
 Store store = DevToolsStore<CounterState>(
   stateReducer,
   initialState: CounterState.defaultState(),

@@ -589,6 +589,131 @@ as it will be less performant and could be a security risk.
 
 You can run your code and open the devtools in your browser!
 
+## Additional Topic: Using Multiple Stores
+
+An application can have multiple stores by both utilizing the
+`context` prop of `ReduxProvider` and setting the `context`
+parameter on `connect`. While this is possible, it is not
+recommended.
+> See: https://redux.js.org/api/store#a-note-for-flux-users
+> See: https://stackoverflow.com/questions/33619775/redux-multiple-stores-why-not
+
+We will we now write multiple stores for our counter application.
+We create a new store file called `multiple_store.dart`. In a real
+application, we would simply put everything inside of `store.dart`,
+but to keep the previous example availaible, we make a new file.
+
+`web/multiple_store.dart`
+```dart
+class Action {
+  final String type;
+  final dynamic value;
+
+  Action({this.type, this.value});
+}
+
+class IncrementAction extends Action {
+  IncrementAction([value]) : super(type: 'INCREMENT', value: value);
+}
+
+class DecrementAction extends Action {
+  DecrementAction([value]) : super(type: 'DECREMENT', value: value);
+}
+
+class MultipleStateCounterState {
+  final int count;
+  final String name;
+
+  MultipleStateCounterState({this.count, this.name});
+
+  MultipleStateCounterState.defaultState(
+      {this.count = 1, this.name = 'Counter'});
+
+  MultipleStateCounterState.updateState(MultipleStateCounterState oldState,
+      {int count, String name})
+      : count = count ?? oldState.count,
+        name = name ?? oldState.name;
+}
+
+MultipleStateCounterState smallCountReducer(
+    MultipleStateCounterState oldState, dynamic action) {
+  if (action is DecrementAction) {
+    return MultipleStateCounterState.updateState(oldState,
+        count: oldState.count - 1);
+  } else if (action is IncrementAction) {
+    return MultipleStateCounterState.updateState(oldState,
+        count: oldState.count + 1);
+  } else {
+    return oldState;
+  }
+}
+
+Store store1 = Store<MultipleStateCounterState>(smallCountReducer,
+    initialState: MultipleStateCounterState.defaultState());
+
+Store store2 = Store<MultipleStateCounterState>(smallCountReducer,
+    initialState: MultipleStateCounterState.defaultState());
+```
+Notice that we only need two actions instead of four and we only
+need one counter field variable for the state instead of two.
+However, we now have two stores, `store1` and `store2`.
+
+In the case you need to have multiple stores, here are
+the steps to do so:
+
+1. Create a `Context` instance to provide the `ReduxProvider`
+and the components that will be in that context.
+
+`web/multiple_store.dart`
+```dart
+final bigCounterContext = createContext();
+```
+
+2. In the `connect` function wrapping the component, pass in
+the context instance.
+
+`web/components/counter.dart`
+```dart
+UiFactory<CounterProps> ConnectedCountWithDifferentContext =
+    connect<MultipleStateCounterState, CounterProps>(
+  mapStateToProps: (state) => (Counter()..currentCount = state.count),
+  context: bigCounterContext,
+)(Counter);
+```
+
+3. Add an aditional `ReduxProvider`, with its `context` prop set
+to the next Context instance and the `store` prop set to your
+additional store.
+
+`web/multiple_store_index.dart`
+```dart
+import 'dart:html';
+
+import 'package:over_react/over_react.dart';
+import 'package:over_react/over_react_redux.dart';
+import 'package:react/react_dom.dart' as react_dom;
+
+import 'components/multiple_store_counter.dart';
+import 'multiple_store.dart';
+
+void main() {
+  setClientConfiguration();
+
+  react_dom.render((ReduxProvider()..store = store1)(
+      (ReduxProvider()
+        ..store = store2
+        ..context = bigCounterContext)(
+        Dom.div()(
+          Dom.h2()('ConnectedCounter Store1'),
+          ConnectedCounter()(),
+          Dom.h2()('ConnetedCounter Store2'),
+          ConnectedCountWithDifferentContext()(),
+        ),
+      ),
+      querySelector('#multiple-store-content')));
+}
+```
+
 ## Next Steps
 
 Check out a [full-featured example application](https://github.com/Workiva/over_react/pull/439) that showcases

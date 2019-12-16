@@ -7,6 +7,8 @@ import 'package:over_react/react_dom.dart' as react_dom;
 import './components/counter.dart';
 import './store.dart';
 
+import './multiple_store_index.dart';
+
 void main() {
   setClientConfiguration();
 
@@ -25,7 +27,7 @@ void main() {
             ConnectedCounter()(),
           ),
           (Dom.div())(
-            Dom.h2()('ConnectedBigCOunter'),
+            Dom.h2()('ConnectedBigCounter'),
             ConnectedBigCounter()(),
             Dom.h2()('ConnectedCounter'),
             ConnectedCounter()(),
@@ -33,4 +35,6 @@ void main() {
         ),
       ),
       querySelector('#content'));
+
+  multiple_store_main();
 }
